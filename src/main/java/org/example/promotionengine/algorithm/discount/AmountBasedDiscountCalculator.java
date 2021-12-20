@@ -8,6 +8,11 @@ import java.math.BigDecimal;
 public class AmountBasedDiscountCalculator implements DiscountCalculator{
     @Override
     public BigDecimal getPromotionDiscount(CartItem cartItem, PromotionItem promotionItem) {
-        return null;
+        if(promotionItem != null &&
+                promotionItem.getPromotionAmount().compareTo(BigDecimal.ZERO) > 0) {
+            return promotionItem.getPromotionAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 }

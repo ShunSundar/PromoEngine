@@ -1,5 +1,7 @@
 package org.example.promotionengine.service.cart;
 
+import org.example.promotionengine.algorithm.promotions.PromotionAlgorithm;
+import org.example.promotionengine.algorithm.promotions.PromotionAlgorithmFactory;
 import org.example.promotionengine.models.Cart;
 import org.example.promotionengine.models.CartItem;
 import org.example.promotionengine.models.Product;
@@ -10,6 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartServiceImpl implements CartService{
+
+    private final PromotionAlgorithmFactory promotionAlgorithmFactory;
+
+    public CartServiceImpl(PromotionAlgorithmFactory promotionAlgorithmFactory) {
+        this.promotionAlgorithmFactory = promotionAlgorithmFactory;
+    }
+
     @Override
     public void addToCart(Cart cart, CartItem cartItem) {
         List<CartItem> cartItemList = new ArrayList<>();
@@ -30,6 +39,17 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public Cart updatePromotion(Cart cart, List<PromotionItem> promotionItemList) {
-        return null;
+        promotionItemList.forEach(promotionItem -> {
+            PromotionAlgorithm promotionAlgorithm = promotionAlgorithmFactory.getPromotionAlgorithm(promotionItem);
+            if(promotionAlgorithm.isValid(cart,promotionItem)) {
+                promotionAlgorithm.updatePromotionDiscount(cart,promotionItem);
+            }
+        });
+        BigDecimal cartTotal = cart.getCartItem()
+                .stream()
+                .map(CartItem::getCartItemAmount)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
+        cart.setTotalAmount(cartTotal);
+        return cart;
     }
 }

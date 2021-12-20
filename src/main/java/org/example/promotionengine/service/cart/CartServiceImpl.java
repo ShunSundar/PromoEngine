@@ -21,7 +21,7 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public void addToCart(Cart cart, CartItem cartItem) {
-        List<CartItem> cartItemList = new ArrayList<>();
+        List<CartItem> cartItemList = cart.getCartItem();
         cartItemList.add(cartItem);
         cart.setCartItem(cartItemList);
         cart.setTotalAmount(cart.getTotalAmount().add(cartItem.getCartItemAmount()));
@@ -45,10 +45,8 @@ public class CartServiceImpl implements CartService{
                 promotionAlgorithm.updatePromotionDiscount(cart,promotionItem);
             }
         });
-        BigDecimal cartTotal = cart.getCartItem()
-                .stream()
-                .map(CartItem::getCartItemAmount)
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
+        BigDecimal cartTotal = cart.getCartItem().stream()
+                                .map(CartItem::getCartItemAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         cart.setTotalAmount(cartTotal);
         return cart;
     }

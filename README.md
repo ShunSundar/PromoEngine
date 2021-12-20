@@ -35,7 +35,6 @@ Total     100
 Total     370
 
 **TestCase 3:**
-
 3 * A     130
 5 * B     45 + 45 + 1 * 30
 1 * C     -
